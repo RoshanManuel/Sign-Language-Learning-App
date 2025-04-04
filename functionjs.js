@@ -17,7 +17,7 @@ const stopWebcamBtn = document.getElementById('stopWebcamBtn');
 let webcamStream = null;
 let recognitionInterval = null;
 
-// Show one section and hide others
+
 function showSection(sectionToShow) {
     if (practiceSection) practiceSection.style.display = 'none';
     if (conversionSection) conversionSection.style.display = 'none';
@@ -30,29 +30,35 @@ function showSection(sectionToShow) {
     }
 }
 
-// Start webcam
-function startWebcam() {
+function startWebcam(event) {
+    event.preventDefault();
     const video = document.getElementById('webcam');
     if (video) {
-        navigator.mediaDevices.getUserMedia({ video: true })
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
             .then(stream => {
                 video.srcObject = stream;
                 webcamStream = stream;
-                webcamContainer.style.display = 'flex';
-                recognizedText.textContent = 'Webcam active';
-                webcamToggleBtn.style.display = 'none';
-                stopWebcamBtn.style.display = 'block';
-                recognitionInterval = setInterval(simulateSignRecognition, 2000);
-                console.log('Webcam started');
+                video.onloadedmetadata = () => {
+                    video.play();
+                    webcamContainer.style.display = 'flex';
+                    recognizedText.textContent = 'Webcam active';
+                    webcamToggleBtn.style.display = 'none';
+                    stopWebcamBtn.style.display = 'block';
+                    recognitionInterval = setInterval(simulateSignRecognition, 2000);
+                    console.log('Webcam started, stream active:', stream.getVideoTracks()[0].label);
+                };
             })
             .catch(error => {
-                console.error('Error accessing webcam:', error);
-                video.insertAdjacentHTML('afterend', '<p style="color: red;">Webcam access denied. Please allow camera permissions.</p>');
+                console.error('Webcam error:', error);
+                recognizedText.textContent = `Error: ${error.message} (Check camera permissions)`;
             });
+    } else {
+        console.error('Video element not found');
+        recognizedText.textContent = 'Error: Video element missing';
     }
 }
 
-// Stop webcam
+
 function stopWebcam() {
     if (webcamStream) {
         const tracks = webcamStream.getTracks();
@@ -60,7 +66,7 @@ function stopWebcam() {
         webcamStream = null;
         webcamContainer.style.display = 'none';
         recognizedText.textContent = 'None';
-        webcamToggleBtn.style.display = 'block'; // Ensure it’s visible and centered
+        webcamToggleBtn.style.display = 'block';
         stopWebcamBtn.style.display = 'none';
         if (recognitionInterval) {
             clearInterval(recognitionInterval);
@@ -70,14 +76,14 @@ function stopWebcam() {
     }
 }
 
-// Placeholder sign recognition
+
 function simulateSignRecognition() {
     const signs = ['Hello', 'Yes', 'No', 'Thank You', 'Please'];
     const randomSign = signs[Math.floor(Math.random() * signs.length)];
     recognizedText.textContent = randomSign;
 }
 
-// Button click events
+
 if (practiceBtn) practiceBtn.addEventListener('click', () => showSection(practiceSection));
 if (conversionBtn) conversionBtn.addEventListener('click', () => showSection(conversionSection));
 if (quizBtn) quizBtn.addEventListener('click', () => showSection(quizSection));
@@ -85,9 +91,8 @@ if (dashboardBtn) dashboardBtn.addEventListener('click', () => showSection(dashb
 
 if (webcamToggleBtn) webcamToggleBtn.addEventListener('click', startWebcam);
 if (stopWebcamBtn) {
-    stopWebcamBtn.style.display = 'none'; // Initially hidden
+    stopWebcamBtn.style.display = 'none';
     stopWebcamBtn.addEventListener('click', stopWebcam);
 }
 
-// Show Classes by default
 if (practiceSection) showSection(practiceSection);
