@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language Web App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Sign Language Web App</h1>
+        <div class="button-group">
+            <button id="practiceBtn">Classes</button>
+            <button id="conversionBtn">Live Recognition</button>
+            <button id="quizBtn">Quiz</button>
+            <button id="dashboardBtn">Dashboard</button>
+        </div>
+        <div id="content">
+            <div id="practiceSection" class="section"> <!-- Placeholder --> </div>
+            <div id="conversionSection" class="section" style="display: none;">
+                <h2>Live Sign Recognition</h2>
+                <p>Click below to start webcam recognition</p>
+                <button id="webcamToggleBtn">Start Webcam</button>
+                <div id="webcamContainer" style="display: none;">
+                    <p class="webcam-text">Show a sign below:</p>
+                    <video id="webcam" autoplay playsinline></video>
+                    <p id="recognizedTextContainer">Recognized Sign: <span id="recognizedText">None</span></p>
+                    <button id="stopWebcamBtn">Stop Webcam</button>
+                </div>
+            </div>
+            <div id="quizSection" class="section" style="display: none;"> <!-- Placeholder --> </div>
+            <div id="dashboardSection" class="section" style="display: none;"> <!-- Placeholder --> </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='myscriptfunc.js') }}"></script>
+</body>
+</html>
