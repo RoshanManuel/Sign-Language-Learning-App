@@ -50,7 +50,7 @@ button {
     flex: 1 1 20%;
     max-width: 25%;
     box-sizing: border-box;
-    text-align: center; /* Ensure text is centered */
+    text-align: center;
 }
 
 button:hover {
@@ -132,6 +132,11 @@ body::after {
     animation: float 8s infinite ease-in-out reverse;
 }
 
+body::before,
+body::after {
+    will-change: transform;
+}
+
 @keyframes glow {
     0% { text-shadow: 0 0 8px rgba(245, 245, 245, 0.6), 0 0 15px #e57373; }
     100% { text-shadow: 0 0 15px rgba(245, 245, 245, 0.8), 0 0 20px #80cbc4; }
@@ -189,8 +194,70 @@ body::after {
     display: block;
 }
 
-#canvas { max-width: 100%; border: 1px solid #000; }
- 
+.auth-button-container {
+    margin: 3vh 0;
+    display: flex;
+    justify-content: center;
+}
+
+#authSection {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 2vh 2vw;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    color: #f5f5f5;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    width: 50%;
+    max-width: 400px;
+    margin: 2vh auto;
+    animation: fadeIn 0.5s ease-in;
+}
+
+#signInPage h2, #signUpPage h2 {
+    font-size: 1.5em;
+    text-shadow: 0 0 5px rgba(245, 245, 245, 0.4);
+    margin-bottom: 1.5vh;
+}
+
+#signInPage input, #signUpPage input {
+    display: block;
+    width: 90%;
+    margin: 0.8vh auto;
+    padding: 0.8vh;
+    font-size: 0.9em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #f5f5f5;
+}
+
+.auth-button-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5vh;
+}
+
+#signInPage button, #signUpPage button {
+    padding: 1.5vh 3vw;
+    font-size:1em;
+    width: 100%;
+    max-width: 300px;
+    font-size: 1em;
+}
+
+#signInPage a, #signUpPage a {
+    display: block;
+    color: #ffb74d;
+    justify-content: center;    
+    text-align: center;
+    text-decoration: none;
+}
+
+#signInPage a:hover, #signUpPage a:hover {
+    text-decoration: underline;
+}
+
 @media (max-width: 600px) {
     h1 { font-size: 1.8em; }
     .button-group { 
@@ -206,10 +273,15 @@ body::after {
         flex: none; 
         text-align: center; 
     }
-    .section { padding: 2vh 2vw; }
-    .section h2 { font-size: 1.5em; }
+    .section, #authSection { 
+        padding: 1.5vh 1.5vw; 
+        width: 70%;
+    }
+    .section h2, #signInPage h2, #signUpPage h2 { font-size: 1.2em; }
     .section p, .webcam-text, #recognizedTextContainer { font-size: 1em; }
     #webcam { height: 40vh; }
+    #signInPage input, #signUpPage input { font-size: 0.8em; }
+    #signInPage button, #signUpPage button { font-size: 0.9em; }
 }
 
 @media (max-width: 400px) {
@@ -219,6 +291,7 @@ body::after {
         padding: 1.5vh 4vw; 
         width: 90%; 
     }
-    .section h2 { font-size: 1.2em; }
+    .section h2, #signInPage h2, #signUpPage h2 { font-size: 1em; }
     #webcam { height: 30vh; }
+    #authSection { width: 80%; }
 }
