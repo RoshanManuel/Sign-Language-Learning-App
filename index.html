@@ -4,15 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign Language Web App</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" 
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   <script>
     function scrollToSection(id) {
       document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
     }
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
 </head>
 <body>
   <div class="container">
@@ -33,6 +30,7 @@
           <p class="webcam-text">Show a sign below:</p>
           <video id="webcam" autoplay playsinline muted></video>
           <p id="recognizedTextContainer">Recognized Sign: <span id="recognizedText">None</span></p>
+          <button id="languageToggleBtn">Switch to Tamil</button>
           <button id="stopWebcamBtn">Stop Webcam</button>
         </div>
       </div>
