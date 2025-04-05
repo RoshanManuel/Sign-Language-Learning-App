@@ -15,8 +15,8 @@ const signUpBtn = document.getElementById('signUpBtn');
 // Index page elements
 let webcamToggleBtn, stopWebcamBtn, webcamContainer, webcam, recognizedText,
     practiceBtn, conversionBtn, quizBtn, dashboardBtn,
-    practiceSection, conversionSection, quizSection, dashboardSection;
-
+    practiceSection, conversionSection, quizSection, dashboardSection,languageToggleBtn;;
+let currentLanguage = 'en';
 if (isIndexPage) {
     webcamToggleBtn = document.getElementById('webcamToggleBtn');
     stopWebcamBtn = document.getElementById('stopWebcamBtn');
@@ -31,6 +31,7 @@ if (isIndexPage) {
     conversionSection = document.getElementById('conversionSection');
     quizSection = document.getElementById('quizSection');
     dashboardSection = document.getElementById('dashboardSection');
+    languageToggleBtn = document.getElementById('languageToggleBtn');   
 }
 
 let webcamStream = null;
@@ -137,7 +138,10 @@ if (isIndexPage) {
             const response = await fetch('/predict', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: base64Image })
+                body: JSON.stringify({ 
+                    image: base64Image,
+                    language: currentLanguage // Use current language
+                })
             });
             const data = await response.json();
             console.log('Prediction result:', data);
@@ -167,6 +171,11 @@ if (isIndexPage) {
         requestAnimationFrame(processFrame);
     }
 
+    languageToggleBtn.addEventListener('click', () => {
+        currentLanguage = currentLanguage === 'en' ? 'ta' : 'en';
+        languageToggleBtn.textContent = currentLanguage === 'en' ? 'Switch to Tamil' : 'Switch to English';
+        // No immediate prediction here—let the loop handle it
+    });
     practiceBtn.addEventListener('click', () => showSection(practiceSection));
     conversionBtn.addEventListener('click', () => showSection(conversionSection));
     quizBtn.addEventListener('click', () => showSection(quizSection));
