@@ -1,39 +1,67 @@
 from flask import Flask, request, jsonify, render_template
+import base64
+import cv2
+import numpy as np
+import mediapipe as mp
 import pickle
 import os
-import numpy as np
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
 
-# Load pre-trained model
-MODEL_PATH = 'model.p'
-if not os.path.exists(MODEL_PATH):
-    raise FileNotFoundError("Model file 'model.p' not found. Ensure it’s in the root directory.")
-model_dict = pickle.load(open(MODEL_PATH, 'rb'))
-model = model_dict['model']
-
+#Loading
+with open('model.p', 'rb') as f:
+    model_data = pickle.load(f)
+    model = model_data['model']
+    
 labels_dict = {
     0: 'Hello', 1: 'Goodbye', 2: 'Thank you', 3: 'Please', 4: 'Help',
     5: 'Sorry', 6: 'Food', 7: 'Home', 8: 'Water', 9: 'Friend'
 }
 
+mp_hands = mp.solutions.hands
+hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.3)
+mp_drawing = mp.solutions.drawing_utils
+
 @app.route('/')
-def home():
+def index():
     return render_template('index.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        data = request.json['landmarks']
-        # Pad to match training data length (42 features: 21 landmarks * 2)
-        max_length = 42
-        if len(data) < max_length:
-            data.extend([0] * (max_length - len(data)))
-        prediction = model.predict([np.asarray(data)])
-        result = labels_dict.get(int(prediction[0]), 'Unknown')
-        return jsonify({'prediction': result})
+        data = request.get_json()
+        if 'image' not in data:
+            return jsonify({'error': 'No image provided'}), 400
+
+        encoded_image = data['image'].split(',')[1]
+        img_data = base64.b64decode(encoded_image)
+        np_arr = np.frombuffer(img_data, np.uint8)
+        image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        results = hands.process(image_rgb)
+        if not results.multi_hand_landmarks:
+            return jsonify({'prediction': 'No hand detected'})
+
+        landmarks = results.multi_hand_landmarks[0]
+        x = [lm.x for lm in landmarks.landmark]
+        y = [lm.y for lm in landmarks.landmark]
+        minX, minY = min(x), min(y)
+
+        dataAux = []
+        for lm in landmarks.landmark:
+            dataAux.append(lm.x - minX)
+            dataAux.append(lm.y - minY)
+
+        prediction_index = model.predict([dataAux])[0]
+        prediction_label = labels_dict.get(prediction_index, "Unknown")
+
+        return jsonify({'prediction': prediction_label})
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 400
+        print(f"Error: {e}")
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True)
